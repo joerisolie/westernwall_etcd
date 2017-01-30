@@ -5,7 +5,6 @@ import etcd
 
 from app import app,forms
 from flask import render_template, flash, redirect, session, url_for, request, g, jsonify
-from flask.ext.login import login_user, logout_user, current_user, login_required
 from .forms import MessageForm, colors
 
 class Message(object):
