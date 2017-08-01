@@ -30,11 +30,24 @@ class Message(object):
 			'color' : self.color
 		}
 
+def check_init_kvs():
+	# Check if keys exist in kvs
+	try:
+		qry = app.etcd_client.read('/messages/', recursive=True)
+	except etcd.EtcdKeyNotFound:
+		#Only if key not found (=new etcd instance) create 36 new messages.
+		count = 0
+		#Create 36 empty messages
+		while count < 36:
+			m = Message("", "", 3, 0, "#FFFFFF")
+			app.etcd_client.write('/messages/' + str(count), json.dumps(m.asDict()))
+			count += 1
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET','POST'])
 @app.route('/index/<string:do_refresh>', methods=['GET','POST'])
 def index(do_refresh=False):
+	check_init_kvs()
 	form = MessageForm()
 
 	if form.validate_on_submit():
